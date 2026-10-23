@@ -1,0 +1,44 @@
+# One command to run the whole site: app + PostgreSQL.
+#   1) cp .env.example .env   and fill in the values marked REQUIRED
+#   2) docker compose up -d --build
+# The app listens on 127.0.0.1:3000 only; put Nginx (deploy/nginx.conf) in front for HTTPS.
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tripleaint}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-tripleaint}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tripleaint} -d ${POSTGRES_DB:-tripleaint}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-https://tripleaint.tw}
+        NEXT_PUBLIC_WHATSAPP: ${NEXT_PUBLIC_WHATSAPP:-886900000000}
+        NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${NEXT_PUBLIC_TURNSTILE_SITE_KEY:-}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tripleaint}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-tripleaint}
+      UPLOAD_DIR: /data/uploads
+      AUTH_TRUST_HOST: "true"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - uploads:/data/uploads
+
+volumes:
+  pgdata:
+  uploads:

@@ -1,0 +1,91 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --charcoal: #1f2124;
+  --graphite: #3a3d42;
+  --silver: #c9cdd2;
+  --mist: #f4f5f7;
+  --brand-rgb: 200 16 46;
+  --brand-hover-rgb: 166 13 38;
+  --brand-deep-rgb: 142 11 32;
+  --brand: rgb(var(--brand-rgb));
+  --brand-hover: rgb(var(--brand-hover-rgb));
+  --brand-deep: rgb(var(--brand-deep-rgb));
+}
+
+@layer base {
+  html {
+    scroll-behavior: auto;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-white font-sans text-graphite antialiased;
+  }
+  h1, h2, h3, h4 {
+    @apply font-display text-charcoal;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-brand ring-offset-2 ring-offset-white;
+  }
+  ::selection {
+    background: var(--brand);
+    color: #fff;
+  }
+}
+
+@layer components {
+  .section { @apply py-20 md:py-28; }
+  .eyebrow { @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand; }
+  .eyebrow::before { content: ""; @apply h-px w-8 bg-brand; }
+  .display-italic { @apply font-display font-extrabold italic tracking-tight; }
+  .link-underline { position: relative; }
+  .link-underline::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px;
+    background: var(--brand); transform: scaleX(0); transform-origin: left; transition: transform 0.3s ease;
+  }
+  .link-underline:hover::after, .link-underline[aria-current="page"]::after { transform: scaleX(1); }
+  .hide-scrollbar { scrollbar-width: none; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+}
+
+/* Hero entrance: pure CSS so the headline and text paint on first render instead of waiting for JavaScript to hydrate (faster LCP). */
+@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+@keyframes rise-scale { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: none; } }
+@keyframes drive-in { from { opacity: 0; transform: translateX(-80px); } to { opacity: 1; transform: none; } }
+.rise { animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; animation-delay: var(--d, 0s); }
+.rise-scale { animation: rise-scale 1s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.drive-in { animation: drive-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both; }
+
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.page-in { animation: page-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+/* Lenis */
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Admin dark scope */
+.dark h1, .dark h2, .dark h3, .dark h4 { color: #fff; }
+.dark { color-scheme: dark; }
+/* Brand red is ~3:1 on dark surfaces; lighten it for text there (derived from the configured brand colour). Backgrounds are unchanged. */
+.dark .text-brand, .dark .hover\:text-brand:hover, .dark .hover\:underline.text-brand { color: color-mix(in srgb, rgb(var(--brand-rgb)) 50%, white); }
+
+/* Rich text inside admin editor and public product description */
+.prose-admin p, .prose-rich p { margin: 0 0 0.75em; line-height: 1.65; }
+.prose-admin h2, .prose-rich h2 { font-size: 1.25em; font-weight: 700; margin: 1em 0 0.4em; }
+.prose-admin h3, .prose-rich h3 { font-size: 1.1em; font-weight: 700; margin: 1em 0 0.4em; }
+.prose-admin ul, .prose-rich ul { list-style: disc; padding-left: 1.4em; margin: 0 0 0.75em; }
+.prose-admin ol, .prose-rich ol { list-style: decimal; padding-left: 1.4em; margin: 0 0 0.75em; }
+.prose-admin a, .prose-rich a { color: var(--brand); text-decoration: underline; }
+.prose-admin blockquote, .prose-rich blockquote { border-left: 3px solid var(--brand); padding-left: 1em; margin: 0 0 0.75em; }
