@@ -1,4 +1,4 @@
-const s3Base = process.env.S3_PUBLIC_URL || (process.env.S3_BUCKET && process.env.AWS_ENDPOINT_URL_S3) || "";
+const s3Base = process.env.S3_PUBLIC_URL || (process.env.S3_BUCKET && (process.env.S3_ENDPOINT || process.env.AWS_ENDPOINT_URL_S3)) || "";
 const s3Host = s3Base ? new URL(s3Base).hostname : null;
 const isProd = process.env.NODE_ENV === "production";
 
