@@ -74,7 +74,7 @@ export function InquiryClient() {
       <h1 className="mt-3 text-3xl font-bold tracking-tight md:text-5xl">Your inquiry list</h1>
       <p className="mt-3 max-w-2xl">Tell us what you need and where it is going. We reply with availability, photos and a freight quote.</p>
 
-      <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_28rem]">
+      <div className="mt-10 grid grid-cols-[minmax(0,1fr)] gap-10 lg:grid-cols-[minmax(0,1fr)_28rem]">
         <section aria-labelledby="items-h">
           <h2 id="items-h" className="text-xl font-bold">Items ({items.length})</h2>
           {items.length === 0 ? (

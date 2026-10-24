@@ -41,7 +41,7 @@ export function Logo({ className, tone = "light", src, priority }: { className?:
         alt="Triple A International – Used Cars, Parts, Export"
         fill
         priority={priority}
-        sizes="(min-width: 768px) 160px, 132px"
+        sizes="(min-width: 768px) 190px, 160px"
         onError={() => setFailed(true)}
         className="object-contain"
       />

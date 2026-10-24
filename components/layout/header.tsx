@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, ClipboardList, Menu, Search, X, Globe } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
@@ -21,6 +22,7 @@ export function Header({ categories, makes }: NavData) {
   const [mega, setMega] = useState<string | null>(null);
   const [mobile, setMobile] = useState(false);
   const [lang, setLang] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { count, setDrawerOpen } = useInquiry();
 
   useEffect(() => {
@@ -29,6 +31,8 @@ export function Header({ categories, makes }: NavData) {
     window.addEventListener("scroll", on, { passive: true });
     return () => window.removeEventListener("scroll", on);
   }, []);
+
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     document.body.style.overflow = mobile ? "hidden" : "";
@@ -46,10 +50,10 @@ export function Header({ categories, makes }: NavData) {
     >
       <div className="container flex h-[72px] items-center justify-between gap-6">
         <Link href="/" className="shrink-0" aria-label="Triple A International – home">
-          <Logo className="w-[132px] md:w-[156px]" src={site.logoUrl || undefined} priority />
+          <Logo className="h-[52px] w-[92px] md:h-[60px] md:w-[106px]" src={site.logoUrl || undefined} priority />
         </Link>
 
-        <nav className="hidden items-center gap-5 xl:gap-7 lg:flex" aria-label="Main">
+        <nav className="hidden items-center gap-5 xl:flex 2xl:gap-7" aria-label="Main">
           {categories.map((c) => (
             <Link
               key={c.slug}
@@ -120,7 +124,7 @@ export function Header({ categories, makes }: NavData) {
           </button>
 
           <button
-            className="grid h-10 w-10 place-items-center rounded-xl text-charcoal hover:bg-mist lg:hidden"
+            className="grid h-10 w-10 place-items-center rounded-xl text-charcoal hover:bg-mist xl:hidden"
             onClick={() => setMobile(true)}
             aria-label="Open menu"
           >
@@ -129,9 +133,10 @@ export function Header({ categories, makes }: NavData) {
         </div>
       </div>
 
+      {mounted && createPortal(<>
       <AnimatePresence>
         {searchOpen && (
-          <motion.div className="fixed inset-0 z-[70] bg-charcoal/60 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSearchOpen(false)} onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}>
+          <motion.div className="fixed inset-0 z-[80] bg-charcoal/60 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSearchOpen(false)} onKeyDown={(e) => e.key === "Escape" && setSearchOpen(false)}>
             <div role="dialog" aria-modal="true" aria-label="Search" className="container pt-24" onClick={(e) => e.stopPropagation()}>
               <div className="mx-auto max-w-2xl rounded-3xl bg-white p-4 shadow-lift">
                 <SearchBox autoFocus onNavigate={() => setSearchOpen(false)} onSubmit={(q) => { setSearchOpen(false); router.push(q ? `/catalog?q=${encodeURIComponent(q)}` : "/catalog"); }} />
@@ -142,6 +147,8 @@ export function Header({ categories, makes }: NavData) {
         )}
       </AnimatePresence>
 
+      </>, document.body)}
+
       {/* Mega menu */}
       <AnimatePresence>
         {active && (
@@ -151,7 +158,7 @@ export function Header({ categories, makes }: NavData) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18 }}
-            className="absolute inset-x-0 top-full hidden border-b border-silver/50 bg-white shadow-lift lg:block"
+            className="absolute inset-x-0 top-full hidden border-b border-silver/50 bg-white shadow-lift xl:block"
           >
             <div className="container grid grid-cols-12 gap-10 py-8">
               <div className="col-span-4">
@@ -179,11 +186,12 @@ export function Header({ categories, makes }: NavData) {
         )}
       </AnimatePresence>
 
-      {/* Mobile drawer */}
+      {/* Mobile drawer (portal: the header's backdrop-filter would trap position:fixed) */}
+      {mounted && createPortal(
       <AnimatePresence>
         {mobile && (
           <motion.div
-            className="fixed inset-0 z-[60] bg-charcoal/50 lg:hidden"
+            className="fixed inset-0 z-[80] bg-charcoal/50 xl:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -223,7 +231,7 @@ export function Header({ categories, makes }: NavData) {
             </motion.aside>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>, document.body)}
     </header>
   );
 }

@@ -77,7 +77,7 @@ export function Floating() {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 30 }}
-            className="fixed bottom-5 left-5 z-[65] max-w-sm rounded-2xl border border-silver/60 bg-white p-5 shadow-lift"
+            className="fixed inset-x-3 bottom-3 z-[65] sm:inset-x-auto sm:bottom-5 sm:left-5 sm:max-w-sm rounded-2xl border border-silver/60 bg-white p-5 shadow-lift"
           >
             <p className="text-sm text-graphite">We use cookies to keep the site working and understand how it is used.</p>
             <div className="mt-4 flex gap-2">
