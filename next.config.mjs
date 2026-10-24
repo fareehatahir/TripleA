@@ -1,4 +1,5 @@
-const s3Host = process.env.S3_PUBLIC_URL ? new URL(process.env.S3_PUBLIC_URL).hostname : null;
+const s3Base = process.env.S3_PUBLIC_URL || (process.env.S3_BUCKET && process.env.AWS_ENDPOINT_URL_S3) || "";
+const s3Host = s3Base ? new URL(s3Base).hostname : null;
 const isProd = process.env.NODE_ENV === "production";
 
 // Content-Security-Policy (production only: `next dev` needs eval for hot reload).
